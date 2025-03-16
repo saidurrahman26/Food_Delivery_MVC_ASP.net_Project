@@ -1,0 +1,7 @@
+﻿SET IDENTITY_INSERT [dbo].[Products] ON
+INSERT INTO [dbo].[Products] ([Id], [Name], [Brand], [Category], [Price], [Description], [ImageFileName], [CreateAt]) VALUES (8, N'KACCHI', N'BestStore', N'Biriyani', CAST(270.00 AS Decimal(16, 2)), N'Nababi Kachhi In Chittagong', N'download.jpeg', N'2025-03-16 01:48:37')
+INSERT INTO [dbo].[Products] ([Id], [Name], [Brand], [Category], [Price], [Description], [ImageFileName], [CreateAt]) VALUES (9, N'Chicken Dum Biriyani', N'Best Store', N'Biriyani', CAST(175.00 AS Decimal(16, 2)), N'Turkish Dum Biriyani', N'DumBiriyani.jpeg', N'2025-03-16 01:48:37')
+INSERT INTO [dbo].[Products] ([Id], [Name], [Brand], [Category], [Price], [Description], [ImageFileName], [CreateAt]) VALUES (10, N'KACCHI', N'BestStore', N'Biriyani', CAST(270.00 AS Decimal(16, 2)), N'Nababi Kachhi In Chittagong', N'download.jpeg', N'2025-03-16 01:55:43')
+INSERT INTO [dbo].[Products] ([Id], [Name], [Brand], [Category], [Price], [Description], [ImageFileName], [CreateAt]) VALUES (11, N'Chicken Dum Biriyani', N'Best Store', N'Biriyani', CAST(175.00 AS Decimal(16, 2)), N'Turkish Dum Biriyani', N'DumBiriyani.jpeg', N'2025-03-16 01:55:43')
+INSERT INTO [dbo].[Products] ([Id], [Name], [Brand], [Category], [Price], [Description], [ImageFileName], [CreateAt]) VALUES (12, N'Shingara', N'Best Store', N'Fastfood', CAST(15.00 AS Decimal(16, 2)), N'snacks', N'shingara.jpeg', N'2025-03-16 01:55:43')
+SET IDENTITY_INSERT [dbo].[Products] OFF
