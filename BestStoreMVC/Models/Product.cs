@@ -5,9 +5,11 @@ namespace BestStoreMVC.Models
 {
     public class Product
     {
-     public int Id { get; set; }
+        public int Id { get; set; }
+        
         [MaxLength(100)]
         public string Name { get; set; } = "";
+
         [MaxLength(100)]
         public string Brand { get; set; } = "";
         [MaxLength(100)]

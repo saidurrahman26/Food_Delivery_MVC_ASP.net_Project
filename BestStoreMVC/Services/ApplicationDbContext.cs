@@ -10,6 +10,8 @@ namespace BestStoreMVC.Services
             
         }
 
-        public DbSet <Product> Products { get; set; }
+        public DbSet<Product> Products { get; set; }
+        public DbSet<User> Users { get; set; }
+
     }
 }
