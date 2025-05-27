@@ -1,7 +1,6 @@
 ﻿using BestStoreMVC.Models;
 using BestStoreMVC.Services;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore.Metadata.Internal;
 
 namespace BestStoreMVC.Controllers
 {
@@ -15,35 +14,48 @@ namespace BestStoreMVC.Controllers
             this.context = context;
             this.environment = environment;
         }
+
+        private bool IsAdmin()
+        {
+            return HttpContext.Session.GetString("IsAdmin") == "true";
+        }
+        public IActionResult ViewProducts()
+        {
+            var products = context.Products.OrderByDescending(p => p.Id).ToList();
+            return View(products);
+        }
+
         public IActionResult Index()
         {
-            var products = context.Products.OrderByDescending( p =>p.Id).ToList(); //new product will be at top
+            if (!IsAdmin()) return RedirectToAction("Login", "Account");
+
+            var products = context.Products.OrderByDescending(p => p.Id).ToList();
             return View(products);
         }
 
         public IActionResult Create()
         {
+            if (!IsAdmin()) return RedirectToAction("Login", "Account");
+
             return View();
         }
+
         [HttpPost]
         public IActionResult Create(ProductDto productDto)
         {
-           
-            if(productDto.ImageFile == null)
+            if (!IsAdmin()) return RedirectToAction("Login", "Account");
+
+            if (productDto.ImageFile == null)
             {
                 ModelState.AddModelError("ImageFile", "The image file is required");
             }
-           
-            if(!ModelState.IsValid)
+
+            if (!ModelState.IsValid)
             {
                 return View(productDto);
             }
 
-            //This is for Saving the Image File
-
-            string newFileName = DateTime.Now.ToString("yyyymmddhhmmssfff");
-            newFileName += Path.GetExtension(productDto.ImageFile!.FileName);
-
+            string newFileName = DateTime.Now.ToString("yyyyMMddHHmmssfff") + Path.GetExtension(productDto.ImageFile!.FileName);
             string imageFullPath = Path.Combine(environment.WebRootPath, "products", newFileName);
 
             using (var stream = System.IO.File.Create(imageFullPath))
@@ -51,8 +63,7 @@ namespace BestStoreMVC.Controllers
                 productDto.ImageFile.CopyTo(stream);
             }
 
-            //This is For New Product In the Database
-            Product product = new Product()
+            var product = new Product()
             {
                 Name = productDto.Name,
                 Brand = productDto.Brand,
@@ -65,45 +76,40 @@ namespace BestStoreMVC.Controllers
 
             context.Products.Add(product);
             context.SaveChanges();
-           
+
             return RedirectToAction("Index", "Products");
         }
 
         public IActionResult Edit(int id)
         {
-            var product = context.Products.Find(id);
-            if(product== null)
-            {
-                return RedirectToAction("Index", "Products");
-            }
+            if (!IsAdmin()) return RedirectToAction("Login", "Account");
 
-            // create productdto from product
+            var product = context.Products.Find(id);
+            if (product == null) return RedirectToAction("Index", "Products");
+
             var productDto = new ProductDto()
             {
                 Name = product.Name,
                 Brand = product.Brand,
-                Category= product.Category,
+                Category = product.Category,
                 Price = product.Price,
-                Description= product.Description,
+                Description = product.Description,
             };
 
-            // return productdto to view
             ViewData["productId"] = product.Id;
             ViewData["ImageFileName"] = product.ImageFileName;
             ViewData["CreateAt"] = product.CreateAt.ToString("MM/dd/yyyy");
 
             return View(productDto);
         }
-        
-        
+
         [HttpPost]
         public IActionResult Edit(int id, ProductDto productDto)
         {
+            if (!IsAdmin()) return RedirectToAction("Login", "Account");
+
             var product = context.Products.Find(id);
-            if(product == null)
-            {
-                return RedirectToAction("Index", "products");
-            }
+            if (product == null) return RedirectToAction("Index", "Products");
 
             if (!ModelState.IsValid)
             {
@@ -111,29 +117,25 @@ namespace BestStoreMVC.Controllers
                 ViewData["ImageFileName"] = product.ImageFileName;
                 ViewData["CreateAt"] = product.CreateAt.ToString("MM/dd/yyyy");
 
-
                 return View(productDto);
             }
-            string newFileName = product.ImageFileName;
-            if(productDto.ImageFile != null)
-            {
-                newFileName = DateTime.Now.ToString("yyyyMMddHHmmssff");
-                newFileName += Path.GetExtension(productDto.ImageFile.FileName);
 
+            string newFileName = product.ImageFileName;
+
+            if (productDto.ImageFile != null)
+            {
+                newFileName = DateTime.Now.ToString("yyyyMMddHHmmssfff") + Path.GetExtension(productDto.ImageFile.FileName);
                 string imageFullPath = Path.Combine(environment.WebRootPath, "products", newFileName);
 
                 using (var stream = System.IO.File.Create(imageFullPath))
                 {
                     productDto.ImageFile.CopyTo(stream);
                 }
-                // dellethe the old pic
+
                 string oldImageFullPath = Path.Combine(environment.WebRootPath, "products", product.ImageFileName);
-
                 System.IO.File.Delete(oldImageFullPath);
-
             }
 
-            //update the product in databse
             product.Name = productDto.Name;
             product.Brand = productDto.Brand;
             product.Category = productDto.Category;
@@ -143,17 +145,16 @@ namespace BestStoreMVC.Controllers
 
             context.SaveChanges();
             return RedirectToAction("Index", "Products");
-
         }
 
         public IActionResult Delete(int id)
         {
+            if (!IsAdmin()) return RedirectToAction("Login", "Account");
+
             var product = context.Products.Find(id);
-            if(product == null)
-            {
-                return RedirectToAction("Index", "Products");
-            }
-            string imageFullPath = environment.WebRootPath + "/products" + product.ImageFileName;
+            if (product == null) return RedirectToAction("Index", "Products");
+
+            string imageFullPath = Path.Combine(environment.WebRootPath, "products", product.ImageFileName);
             System.IO.File.Delete(imageFullPath);
 
             context.Products.Remove(product);
@@ -161,6 +162,5 @@ namespace BestStoreMVC.Controllers
 
             return RedirectToAction("Index", "Products");
         }
-    
     }
 }

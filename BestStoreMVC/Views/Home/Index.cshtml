@@ -2,13 +2,46 @@
     ViewData["Title"] = "Home";
 }
 
-<div class="text-center mt-5">
-    <h1 class="display-4 mb-3">🛍️ Welcome to <span class="text-primary">BestStore</span>!</h1>
-    <p class="lead mb-4">Your one-stop shop for top-quality products at unbeatable prices.</p>
+<div class="container mt-5">
+    <div class="text-center hero">
+        <h1 class="display-4 mb-3">🚀 Fast & Fresh <span>Food Delivery</span></h1>
+        <p class="lead mb-4">Bringing your favorite meals to your doorstep in minutes.</p>
 
-    <div class="mb-5">
-        <a class="btn btn-success btn-lg me-3" asp-controller="Products" asp-action="Index">View Products</a>
-        <a class="btn btn-outline-primary btn-lg" asp-controller="Account" asp-action="Register">Register</a>
+        <div class="hero-buttons mb-3">
+            <a class="btn btn-success btn-lg me-3" asp-controller="Products" asp-action="ViewProducts">🍔 View Menu</a>
+            <a class="btn btn-outline-primary btn-lg" asp-controller="Account" asp-action="Register">📝 Register</a>
+            <a class="btn btn-outline-primary btn-lg ms-3" asp-controller="Account" asp-action="Login">🔐 Admin Login</a>
+
+            @if (Context.Session.GetString("IsAdmin") == "true")
+            {
+                <a class="btn btn-dark btn-lg ms-3" asp-controller="Products" asp-action="Index">🛠️ Admin Dashboard</a>
+            }
+        </div>
+
+        @* <p><strong>IsAdmin Session Value:</strong> @Context.Session.GetString("IsAdmin")</p> *@
+    </div>
+
+    <div class="row text-center features">
+        <div class="col-md-4 mb-4">
+            <div class="card p-4">
+                <div class="mb-2"><i class="bi bi-bicycle display-5 text-success"></i></div>
+                <h5>Fast Delivery</h5>
+                <p class="text-muted">Get your food within 30 minutes, always hot and fresh.</p>
+            </div>
+        </div>
+        <div class="col-md-4 mb-4">
+            <div class="card p-4">
+                <div class="mb-2"><i class="bi bi-star-fill display-5 text-warning"></i></div>
+                <h5>Top Rated</h5>
+                <p class="text-muted">Trusted by thousands for delicious and hygienic meals.</p>
+            </div>
+        </div>
+        <div class="col-md-4 mb-4">
+            <div class="card p-4">
+                <div class="mb-2"><i class="bi bi-emoji-smile display-5 text-primary"></i></div>
+                <h5>User Friendly</h5>
+                <p class="text-muted">Simple and clean interface for a smooth ordering experience.</p>
+            </div>
+        </div>
     </div>
 </div>
-

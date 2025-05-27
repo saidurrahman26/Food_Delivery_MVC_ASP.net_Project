@@ -1,44 +1,86 @@
-﻿using BestStoreMVC.Models; // Ensure this matches your project namespace
-using BestStoreMVC.Services; // If your ApplicationDbContext is under Services
+﻿using BestStoreMVC.Models;
+using BestStoreMVC.Services;
 using Microsoft.AspNetCore.Mvc;
+using System.Linq;
 
-public class AccountController : Controller
+namespace BestStoreMVC.Controllers
 {
-    private readonly ApplicationDbContext _context;
-
-    // Constructor to inject ApplicationDbContext
-    public AccountController(ApplicationDbContext context)
+    public class AccountController : Controller
     {
-        _context = context;
-    }
+        private readonly ApplicationDbContext _context;
 
-    // GET: /Account/Register
-    public IActionResult Register()
-    {
-        return View();
-    }
-
-    // POST: /Account/Register
-    [HttpPost]
-    public IActionResult Register(RegisterViewModel model)
-    {
-        if (!ModelState.IsValid)
+        public AccountController(ApplicationDbContext context)
         {
-            return View(model);
+            _context = context;
         }
 
-        // Save user to the database
-        var user = new User
+        public IActionResult Register()
         {
-            FullName = model.FullName,
-            Email = model.Email,
-            PasswordHash = model.Password // (optional: hash the password later)
-        };
+            return View();
+        }
 
-        _context.Users.Add(user);
-        _context.SaveChanges();
+        [HttpPost]
+        public IActionResult Register(RegisterViewModel model)
+        {
+            if (!ModelState.IsValid)
+                return View(model);
 
-        TempData["SuccessMessage"] = "Registration successful!";
-        return RedirectToAction("Index", "Home");
+            var user = new User
+            {
+                FullName = model.FullName,
+                Email = model.Email,
+                PasswordHash = model.Password,
+                IsAdmin = (model.Email == "saidurrahmansajid@gmail.com" || model.Email == "tawabahmednafi@gmail.com")
+            };
+
+            _context.Users.Add(user);
+            _context.SaveChanges();
+
+            TempData["SuccessMessage"] = "Registration successful!";
+            return RedirectToAction("Index", "Home");
+        }
+
+        public IActionResult Login()
+        {
+            return View();
+        }
+
+        [HttpPost]
+        public IActionResult Login(LoginViewModel model)
+        {
+            if (!ModelState.IsValid)
+                return View(model);
+
+            // Check if email exists
+            var user = _context.Users.FirstOrDefault(u => u.Email == model.Email);
+            if (user == null)
+            {
+                ModelState.AddModelError("Email", "Invalid email");
+                return View(model);
+            }
+
+            // Check if password matches
+            if (user.PasswordHash != model.Password)
+            {
+                ModelState.AddModelError("Password", "Invalid password");
+                return View(model);
+            }
+
+            // Login success - set session
+            HttpContext.Session.SetString("IsAdmin", user.IsAdmin ? "true" : "false");
+
+            // ✅ Redirect based on role
+            if (user.IsAdmin)
+                return RedirectToAction("Dashboard", "Admin");  // Admin → Dashboard
+
+            return RedirectToAction("ViewProducts", "Products"); // User → View Menu
+        }
+
+        public IActionResult Logout()
+        {
+            HttpContext.Session.Clear();
+            return RedirectToAction("Login", "Account");
+        }
+
     }
 }

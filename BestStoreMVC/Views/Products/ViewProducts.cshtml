@@ -1,0 +1,24 @@
+﻿@model List<BestStoreMVC.Models.Product>
+
+@{
+    ViewData["Title"] = "Available Products";
+}
+
+<h2 class="text-center my-4">Available Products</h2>
+
+<div class="row">
+    @foreach (var product in Model)
+    {
+        <div class="col-md-4 mb-4">
+            <div class="card shadow-sm">
+                <img src="~/products/@product.ImageFileName" class="card-img-top" alt="@product.Name" />
+                <div class="card-body">
+                    <h5 class="card-title">@product.Name</h5>
+                    <p><strong>Brand:</strong> @product.Brand</p>
+                    <p class="card-text">@product.Description</p>
+                    <p><strong>Price:</strong> $@product.Price</p>
+                </div>
+            </div>
+        </div>
+    }
+</div>

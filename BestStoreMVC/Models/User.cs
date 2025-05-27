@@ -12,4 +12,6 @@ public class User
 
     [Required]
     public string PasswordHash { get; set; } = null!;
+
+    public bool IsAdmin { get; set; } = false;
 }
