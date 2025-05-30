@@ -9,7 +9,7 @@
 
         <div class="hero-buttons mb-3">
             <a class="btn btn-success btn-lg me-3" asp-controller="Products" asp-action="ViewProducts">🍔 View Menu</a>
-            <a class="btn btn-outline-primary btn-lg" asp-controller="Account" asp-action="Register">📝 Register</a>
+            <a class="btn btn-outline-primary btn-lg" asp-controller="Account" asp-action="Register">📝 User Register</a>
             <a class="btn btn-outline-primary btn-lg ms-3" asp-controller="Account" asp-action="Login">🔐 Admin Login</a>
 
             @if (Context.Session.GetString("IsAdmin") == "true")
