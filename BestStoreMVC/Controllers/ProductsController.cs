@@ -33,6 +33,29 @@ namespace BestStoreMVC.Controllers
             return View(products);
         }
 
+        [HttpGet]
+        public JsonResult GetProductsJson()
+        {
+            if (HttpContext.Session.GetString("IsAdmin") != "true")
+                return Json(new { error = "Unauthorized" });
+
+            var products = context.Products.Select(p => new
+            {
+                p.Id,
+                p.Name,
+                p.Brand,
+                p.Category,
+                p.Description,
+                p.Price,
+                p.ImageFileName,
+                CreateAt = p.CreateAt.ToString("yyyy-MM-dd")
+            }).ToList();
+
+            return Json(products);
+        }
+
+
+
         public IActionResult Create()
         {
             if (!IsAdmin()) return RedirectToAction("Login", "Account");
