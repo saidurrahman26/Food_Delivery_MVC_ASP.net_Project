@@ -1,54 +1,54 @@
-﻿@model List<Product>
-@{
+﻿@{
+    ViewData["Title"] = "Product List (Tabulator)";
 }
-<h2 class="text-center mb-5"> List Of Product </h2>
-<div class="row mb-5">
-    <div class="col">
-        <a class="btn btn-primary" asp-controller="Products" asp-action="Create"> New Product</a>
 
-    </div>
-    <div class="col">
+<link href="https://unpkg.com/tabulator-tables@5.4.3/dist/css/tabulator.min.css" rel="stylesheet">
+<script src="https://unpkg.com/tabulator-tables@5.4.3/dist/js/tabulator.min.js"></script>
+
+<div class="container mt-5">
+    <h2 class="text-center mb-4">📋 Product List (Tabulator)</h2>
+
+    <div class="mb-3">
+        <a class="btn btn-primary" asp-controller="Products" asp-action="Create">➕ New Product</a>
     </div>
 
+    <div id="product-table"></div>
 </div>
 
-<table class="table">
-    <thead>
-        <tr>
-            <th>ID</th>
-            <th>Name</th>
-            <th>Brand</th>
-            <th>Category</th>
-            <th>Price</th>
-            <th>Image</th>
-            <th>Description</th>
-            <th>Created At</th>
-            <th>Action</th>
-
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var product in Model)
-        {
-            <tr>
-                <td>@product.Id</td>
-                <td>@product.Name</td>
-                <td>@product.Brand</td>
-                <td>@product.Category</td>
-                <td>@(product.Price)$</td>
-                <td><img src="/products/@product.ImageFileName" width="100" /></td>
-                <td>@product.Description</td>
-                <td>@product.CreateAt.ToString("MM/dd/yyyy")</td>
-                <td style="white-space:nowrap">
-
-                    <a class="btn btn-primary btn-sn" asp-controller="Products" asp-action="Edit"
-                       asp-route-id="@product.Id">   Edit  </a>
-
-                    <a class="btn btn-danger btn-sn" asp-controller="Products" asp-action="Delete"
-                       asp-route-id="@product.Id" onclick="return confirm ('Are you sure?')">   Delete   </a>
-
-                </td>
-            </tr>
-        }
-    </tbody>
-</table>
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const table = new Tabulator("#product-table", {
+            height: 500,
+            layout: "fitColumns",
+            ajaxURL: "/Products/GetProductsJson",
+            columns: [
+                { title: "ID", field: "id", width: 60 },
+                { title: "Name", field: "name" },
+                { title: "Brand", field: "brand" },
+                { title: "Category", field: "category" },
+                { title: "Price ($)", field: "price", hozAlign: "right" },
+                {
+                    title: "Image",
+                    field: "imageFileName",
+                    formatter: function (cell) {
+                        const fileName = cell.getValue();
+                        return `<img src="/products/${fileName}" width="80" />`;
+                    }
+                },
+                { title: "Description", field: "description" },
+                { title: "Created At", field: "createAt" },
+                {
+                    title: "Actions",
+                    formatter: function (cell, formatterParams) {
+                        const id = cell.getRow().getData().id;
+                        return `
+                            <a class="btn btn-sm btn-primary me-1" href="/Products/Edit/${id}">Edit</a>
+                            <a class="btn btn-sm btn-danger" href="/Products/Delete/${id}" onclick="return confirm('Are you sure?')">Delete</a>
+                        `;
+                    },
+                    hozAlign: "center"
+                }
+            ]
+        });
+    });
+</script>
