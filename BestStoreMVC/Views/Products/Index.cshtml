@@ -2,11 +2,13 @@
     ViewData["Title"] = "Product List (Tabulator)";
 }
 
-<link href="https://unpkg.com/tabulator-tables@5.4.3/dist/css/tabulator.min.css" rel="stylesheet">
+<!-- Tabulator CSS -->
+<link href="https://unpkg.com/tabulator-tables@5.4.3/dist/css/tabulator.min.css" rel="stylesheet" />
+<!-- Tabulator JS -->
 <script src="https://unpkg.com/tabulator-tables@5.4.3/dist/js/tabulator.min.js"></script>
 
 <div class="container mt-5">
-    <h2 class="text-center mb-4">📋 Product List (Tabulator)</h2>
+    <h2 class="text-center mb-4">📋 Product List </h2>
 
     <div class="mb-3">
         <a class="btn btn-primary" asp-controller="Products" asp-action="Create">➕ New Product</a>
@@ -21,6 +23,12 @@
             height: 500,
             layout: "fitColumns",
             ajaxURL: "/Products/GetProductsJson",
+
+            // ✅ Pagination settings
+            pagination: "local",
+            paginationSize: 5,
+            paginationSizeSelector: [5, 10, 20, 50],
+
             columns: [
                 { title: "ID", field: "id", width: 60 },
                 { title: "Name", field: "name" },
@@ -32,14 +40,15 @@
                     field: "imageFileName",
                     formatter: function (cell) {
                         const fileName = cell.getValue();
-                        return `<img src="/products/${fileName}" width="80" />`;
-                    }
+                        return `<img src="/products/${fileName}" style="width: 80px; height: 80px; object-fit: cover; border-radius: 6px;" />`;
+                    },
+                    hozAlign: "center"
                 },
                 { title: "Description", field: "description" },
                 { title: "Created At", field: "createAt" },
                 {
                     title: "Actions",
-                    formatter: function (cell, formatterParams) {
+                    formatter: function (cell) {
                         const id = cell.getRow().getData().id;
                         return `
                             <a class="btn btn-sm btn-primary me-1" href="/Products/Edit/${id}">Edit</a>
